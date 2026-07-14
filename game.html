@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Professional Number Guessing Game</title>
+    <style>
+        /* =========================
+       NEW: THEME VARIABLES
+       ========================= */
+        :root {
+            --bg-main: linear-gradient(135deg, #eef2ff, #f8fafc);
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-soft: #6b7280;
+            --border: #e5e7eb;
+            --input-border: #d1d5db;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-bg: #e5e7eb;
+            --secondary-text: #111827;
+            --panel-bg: #f9fafb;
+            --info: #2563eb;
+            --warning: #d97706;
+            --success: #16a34a;
+            --error: #dc2626;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        /* =========================
+       NEW: DARK MODE
+       Change colors here if you want a different dark theme
+       ========================= */
+        body.dark-mode {
+            --bg-main: linear-gradient(135deg, #0f172a, #111827);
+            --card-bg: #1f2937;
+            --text-main: #f9fafb;
+            --text-soft: #cbd5e1;
+            --border: #374151;
+            --input-border: #4b5563;
+            --primary: #6366f1;
+            --primary-hover: #818cf8;
+            --secondary-bg: #374151;
+            --secondary-text: #f9fafb;
+            --panel-bg: #111827;
+            --info: #60a5fa;
+            --warning: #fbbf24;
+            --success: #4ade80;
+            --error: #f87171;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0 0 10px;
+            font-size: 2rem;
+            color: var(--text-main);
+        }
+
+        .header p {
+            margin: 0;
+            color: var(--text-soft);
+            font-size: 1rem;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            background: var(--card-bg);
+            color: var(--text-main);
+            transition: border-color 0.2s ease, background 0.3s ease, color 0.3s ease;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.15s ease, opacity 0.15s ease, background 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            opacity: 0.95;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-bg);
+            color: var(--secondary-text);
+        }
+
+        .btn-theme {
+            flex: unset;
+            min-width: 160px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        .stat-box {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: background 0.3s ease, border 0.3s ease;
+        }
+
+        .stat-box h3 {
+            margin: 0 0 8px;
+            font-size: 0.9rem;
+            color: var(--text-soft);
+            font-weight: 600;
+        }
+
+        .stat-box p {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        .feedback {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+            transition: background 0.3s ease, border 0.3s ease;
+        }
+
+        .info {
+            color: var(--info);
+        }
+
+        .warning {
+            color: var(--warning);
+        }
+
+        .success {
+            color: var(--success);
+        }
+
+        .error {
+            color: var(--error);
+        }
+
+        .range-text {
+            margin-top: 8px;
+            font-size: 0.95rem;
+            color: var(--text-soft);
+        }
+
+        @media (max-width: 700px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- NEW: DARK MODE toggle button -->
+        <div class="top-bar">
+            <div></div>
+            <button class="btn-secondary btn-theme" onclick="toggleDarkMode()">
+                Toggle Dark Mode
+            </button>
+        </div>
+
+        <div class="header">
+            <h1>Number Guessing Game</h1>
+            <p>Choose a difficulty and try to guess the secret number.</p>
+        </div>
+
+        <div class="section">
+            <label for="difficulty">Difficulty Level</label>
+            <select id="difficulty">
+                <option value="easy">Easy (1 - 10)</option>
+                <option value="medium" selected>Medium (1 - 50)</option>
+                <option value="hard">Hard (1 - 100)</option>
+            </select>
+        </div>
+
+        <div class="section">
+            <label for="guessInput">Your Guess</label>
+            <input type="number" id="guessInput" placeholder="Enter your guess" />
+            <div class="range-text" id="rangeText">Range: 1 to 50</div>
+        </div>
+
+        <div class="buttons">
+            <button class="btn-primary" onclick="checkGuess()">Submit Guess</button>
+            <button class="btn-secondary" onclick="startNewGame()">New Game</button>
+        </div>
+
+        <!-- NEW: TIMER + BEST SCORE added here -->
+        <div class="stats">
+            <div class="stat-box">
+                <h3>Attempts</h3>
+                <p id="attempts">0</p>
+            </div>
+
+            <div class="stat-box">
+                <h3>Difficulty</h3>
+                <p id="difficultyDisplay">Medium</p>
+            </div>
+
+            <div class="stat-box">
+                <h3>Timer</h3>
+                <p id="timer">0s</p>
+            </div>
+
+            <div class="stat-box">
+                <h3>Best Score</h3>
+                <p id="bestScore">-</p>
+            </div>
+        </div>
+
+        <div class="stats" style="grid-template-columns: 1fr;">
+            <div class="stat-box">
+                <h3>Status</h3>
+                <p id="status">In Progress</p>
+            </div>
+        </div>
+
+        <div class="feedback info" id="feedback">
+            New game started. Enter your first guess.
+        </div>
+    </div>
+
+    <script>
+        const difficultySettings = {
+            easy: { min: 1, max: 10, label: "Easy" },
+            medium: { min: 1, max: 50, label: "Medium" },
+            hard: { min: 1, max: 100, label: "Hard" }
+        };
+
+        let secretNumber = 0;
+        let attempts = 0;
+        let min = 1;
+        let max = 50;
+        let gameWon = false;
+
+        /* =========================
+           NEW: TIMER variables
+           ========================= */
+        let secondsElapsed = 0;
+        let timerInterval = null;
+
+        const difficultySelect = document.getElementById("difficulty");
+        const guessInput = document.getElementById("guessInput");
+        const attemptsText = document.getElementById("attempts");
+        const difficultyDisplay = document.getElementById("difficultyDisplay");
+        const statusText = document.getElementById("status");
+        const feedback = document.getElementById("feedback");
+        const rangeText = document.getElementById("rangeText");
+
+        /* NEW: TIMER + BEST SCORE elements */
+        const timerText = document.getElementById("timer");
+        const bestScoreText = document.getElementById("bestScore");
+
+        function setFeedback(message, type) {
+            feedback.textContent = message;
+            feedback.className = `feedback ${type}`;
+        }
+
+        /* =========================
+           NEW: DARK MODE
+           Change "darkMode" key if needed
+           ========================= */
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            const isDark = document.body.classList.contains("dark-mode");
+            localStorage.setItem("darkMode", isDark ? "enabled" : "disabled");
+        }
+
+        function loadDarkMode() {
+            const savedMode = localStorage.getItem("darkMode");
+            if (savedMode === "enabled") {
+                document.body.classList.add("dark-mode");
+            }
+        }
+
+        /* =========================
+           NEW: TIMER functions
+           ========================= */
+        function startTimer() {
+            clearInterval(timerInterval);
+            secondsElapsed = 0;
+            timerText.textContent = "0s";
+
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                timerText.textContent = `${secondsElapsed}s`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        /* =========================
+           NEW: BEST SCORE
+           Best score is saved per difficulty
+           ========================= */
+        function getBestScoreKey() {
+            return `bestScore_${difficultySelect.value}`;
+        }
+
+        function loadBestScore() {
+            const bestScore = localStorage.getItem(getBestScoreKey());
+            bestScoreText.textContent = bestScore ? bestScore : "-";
+        }
+
+        function saveBestScore(currentAttempts) {
+            const key = getBestScoreKey();
+            const saved = localStorage.getItem(key);
+
+            if (!saved || currentAttempts < Number(saved)) {
+                localStorage.setItem(key, currentAttempts);
+                bestScoreText.textContent = currentAttempts;
+            }
+        }
+
+        function startNewGame() {
+            const selected = difficultySettings[difficultySelect.value];
+            min = selected.min;
+            max = selected.max;
+            secretNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+            attempts = 0;
+            gameWon = false;
+
+            attemptsText.textContent = attempts;
+            difficultyDisplay.textContent = selected.label;
+            statusText.textContent = "In Progress";
+            rangeText.textContent = `Range: ${min} to ${max}`;
+
+            guessInput.value = "";
+            guessInput.min = min;
+            guessInput.max = max;
+            guessInput.placeholder = `Enter a number between ${min} and ${max}`;
+
+            setFeedback("New game started. Enter your first guess.", "info");
+            guessInput.focus();
+
+            /* NEW: restart timer every new game */
+            startTimer();
+
+            /* NEW: load best score for current difficulty */
+            loadBestScore();
+        }
+
+        function checkGuess() {
+            if (gameWon) {
+                setFeedback("You already won. Start a new game to play again.", "info");
+                return;
+            }
+
+            const userGuess = Number(guessInput.value);
+
+            if (!guessInput.value.trim()) {
+                setFeedback("Please enter a number.", "error");
+                return;
+            }
+
+            if (!Number.isInteger(userGuess)) {
+                setFeedback("Please enter a valid whole number.", "error");
+                return;
+            }
+
+            if (userGuess < min || userGuess > max) {
+                setFeedback(`Please enter a number between ${min} and ${max}.`, "error");
+                return;
+            }
+
+            attempts++;
+            attemptsText.textContent = attempts;
+
+            if (userGuess < secretNumber) {
+                setFeedback("Too low. Try again.", "warning");
+            } else if (userGuess > secretNumber) {
+                setFeedback("Too high. Try again.", "warning");
+            } else {
+                gameWon = true;
+                statusText.textContent = "Won";
+                stopTimer(); /* NEW: stop timer on win */
+                saveBestScore(attempts); /* NEW: save best score */
+
+                setFeedback(
+                    `Correct! You guessed the number ${secretNumber} in ${attempts} attempt${attempts > 1 ? "s" : ""} and ${secondsElapsed} second${secondsElapsed !== 1 ? "s" : ""}.`,
+                    "success"
+                );
+            }
+
+            guessInput.value = "";
+            guessInput.focus();
+        }
+
+        difficultySelect.addEventListener("change", startNewGame);
+
+        guessInput.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                checkGuess();
+            }
+        });
+
+        /* NEW: first load setup */
+        loadDarkMode();
+        startNewGame();
+    </script>
+</body>
+
+</html>
